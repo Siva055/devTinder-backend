@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const cors = require("cors")
+const { userAuth } = require('./middlewares/auth');
 
 const app = express();
 
@@ -23,15 +24,15 @@ const requestRouter = require("./routes/request");
 const userRouter = require('./routes/user')
 
 
-app.use('/',authRouter);
-app.use('/',profileRouter);
-app.use('/',requestRouter)
-app.use('/',userRouter)
+app.use('/', authRouter);
+app.use('/', profileRouter);
+app.use('/', requestRouter)
+app.use('/', userRouter)
 
 
 // Get user by email
 
-app.get("/user", async (req, res) => {
+app.get("/user", userAuth, async (req, res) => {
   const userEmail = req.body.emailId;
 
   try {
@@ -48,7 +49,7 @@ app.get("/user", async (req, res) => {
 
 //Feed API - GET /feed - get all the users form the database
 
-app.get("/feed", async (req, res) => {
+app.get("/feed", userAuth, async (req, res) => {
   try {
     const users = await User.find({});
     if (users.length === 0) {
@@ -61,7 +62,7 @@ app.get("/feed", async (req, res) => {
   }
 });
 
-app.delete("/user", async (req, res) => {
+app.delete("/user", userAuth, async (req, res) => {
   const userId = req.body.userId;
   try {
     const user = await User.findByIdAndDelete(userId);
@@ -73,7 +74,7 @@ app.delete("/user", async (req, res) => {
 
 // update the data of the user
 
-app.patch("/user/:userId", async (req, res) => {
+app.patch("/user/:userId", userAuth, async (req, res) => {
   // const userId = req.body.userId;
   const userId = req.params?.userId;
   const data = req.body;
@@ -107,5 +108,5 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.log("Database cannot be connected",err.message);
+    console.log("Database cannot be connected", err.message);
   });
