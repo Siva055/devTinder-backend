@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require("express");
 const connectDB = require("./config/database");
 const User = require("./models/user");
@@ -8,6 +10,7 @@ const cors = require("cors")
 const { userAuth } = require('./middlewares/auth');
 
 const app = express();
+
 
 app.use(cors(
   {
@@ -103,7 +106,7 @@ app.patch("/user/:userId", userAuth, async (req, res) => {
 connectDB()
   .then(() => {
     console.log("Database Connection established");
-    app.listen(8080, () => {
+    app.listen(process.env.PORT, () => {
       console.log("Server is listening at port 8080 ....");
     });
   })
